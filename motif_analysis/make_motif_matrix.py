@@ -10,29 +10,41 @@ import csv
 motif_fofn=sys.argv[1]
 p_keep=sys.argv[2]
 out_name=str(sys.argv[3])
-print out_name
-print motif_fofn
-print p_keep
 motifs=open(out_name + ".csv","w")
+
+tmpset=set()
+rcDict = dict(zip('ACGTWSMKRYBDHVNacgtwsmkrybdhvn-','TGCAWSKMYRVHDBNtgcawskmyrvhdbn-'))
+def revcomp(seq):
+   """Return the reverse complement of a string:
+
+   :param seq: DNA Sequence to be reverse complemented
+   :type seq: str
+   :returns: A new string that is the reverse complement of seq
+   :rtype: string
+
+   """
+   return ''.join([rcDict[nuc] for nuc in  seq[::-1]])
+
 
 #For each file in motif fofn
 with open (motif_fofn) as m:
 	for line in m:
 		f1=line.strip().split()
 		f2=str(f1[0])
-		print f2
 		with open (f2,'rb') as f:
 			motif_reader= csv.reader(f,skipinitialspace=True)
 			next(motif_reader)
 			motifs.write(f2.split('/')[2])
-			print f2.split('/')[2]
 			motifs.write(",")
 			for row in motif_reader:
 				if row[3]> p_keep:
-					motifs.write(row[0])
-					motifs.write(",")
+					if revcomp(row[0]) not in tmpset:
+						tmpset.add(row[0])
+						motifs.write(row[0])
+						motifs.write(",")
 			motifs.write('\n')
-		
+
+motifs.close()		
 id_mots = {}
 all_mots = []
 motset = set()
