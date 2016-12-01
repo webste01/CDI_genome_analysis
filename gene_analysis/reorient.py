@@ -1,15 +1,16 @@
 import sys
 import subprocess
 
-try sys.argv[3]:
-    pass
-except:
-    sys.exit('''USAGE python reorient.py query.fa reference.fa output.fa
+try:   
+   sys.argv[1:]
+except IndexError:  
+	sys.exit('''USAGE python reorient.py query.fa reference.fa output.fa
 where query.fa is the fasta file to be reorientated
 reference is the fasta file with the correct start
 and output.fa is the fasta file to put reorientated fasta
 will only work with single entry fastas
 ''')
+
 
 subprocess.Popen('makeblastdb -dbtype nucl -in ' + sys.argv[2] + ' -out tempdb', shell=True).wait()
 subprocess.Popen('blastn -query ' + sys.argv[1] + ' -db tempdb -outfmt 6 -out blast_temp.out', shell=True).wait()
