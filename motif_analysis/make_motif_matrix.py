@@ -36,6 +36,7 @@ with open (motif_fofn) as m:
 			next(motif_reader)
 			motifs.write(f2.split('/')[2])
 			motifs.write(",")
+			tmpset=set()
 			for row in motif_reader:
 				if row[3]> p_keep:
 					if revcomp(row[0]) not in tmpset:
@@ -43,7 +44,6 @@ with open (motif_fofn) as m:
 						motifs.write(row[0])
 						motifs.write(",")
 			motifs.write('\n')
-
 motifs.close()		
 id_mots = {}
 all_mots = []
