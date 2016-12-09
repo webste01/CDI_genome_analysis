@@ -61,7 +61,7 @@ with open (motif_fofn) as m:
                               else:
                                  motifs.write(rcmotif)
                                  motifCounter[rcmotif] += 1
-                                 genomeMotifs[genome_id].add(motif)
+                                 genomeMotifs[genome_id].add(rcmotif)
                                  motifs.write(",")
 			motifs.write('\n')
 motifs.close()		
