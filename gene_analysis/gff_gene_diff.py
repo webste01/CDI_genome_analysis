@@ -23,22 +23,23 @@ with open(out,'w') as out_fn:
 			for iso in input_list:
 	 			if file.endswith(str(iso)+".gff"):
 					out_fn.write(mypath+"/"+file)
-					out_fn.write(", ")
+					out_fn.write(",")
 					j=j+1
 	with open(list2,'r') as input_set_two:
-		out_fn.write("--input_set_two ")
+		out_fn.write(" --input_set_two ")
 		for line in input_set_two:
 			l = line.strip().split()
 			outlist.append(l[0])	
 		for isolate in outlist:
 			if isolate  not in input_list:
-				output_list.append(l[0])
+				output_list.append(isolate)
 				i=i+1
-                for file in os.listdir(mypath):
+                print output_list
+		for file in os.listdir(mypath):
 			for iso in output_list:
                                 if file.endswith(str(iso)+".gff"):
                                         out_fn.write(mypath+"/"+file)
-                                        out_fn.write(", ")
+                                        out_fn.write(",")
 print "Number of genomes in out set:" 
 print i
 print "Number of genomes in in set:" 
