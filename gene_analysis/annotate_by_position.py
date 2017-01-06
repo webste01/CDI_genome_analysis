@@ -1,4 +1,3 @@
-#Script to take in a *cim file and annotate each row with: 0/1 hits gene, gene it hits, uniprot term 
 from Bio import SeqIO
 import os
 import sys
@@ -7,7 +6,7 @@ gbk_dir=str(sys.argv[1])
 cim_file=sys.argv[2] #merged_chromosomal.ali.csv
 outname=sys.argv[3]
 
-d={}
+d={} #d[(isolate_id,motif)] = [list of modified positions]
 with open(cim_file, 'r+') as cim:
 	    line = next(cim)	
             for line in cim:
@@ -20,12 +19,10 @@ with open(cim_file, 'r+') as cim:
 			else:
 				d[(isolate_id,motif)].append(pos)
 cim.close()
-#print d[('23621','GATC')]
 
 
-#open the corresponding genbank (gb_fn), retrieve annotaion corresponding to where the position  
 #funtion will write to a file: contig ID, position, motif, in_gene(0/1), gene name (if hits gene, else 0), uniprotID(if hits gene, else 0)
-print gbk_dir
+print "Genbank Directory:" + gbk_dir
 with open(outname,'w') as out:
 	for item in d:
 		for fname in os.listdir(gbk_dir):    # change directory as needed
@@ -41,11 +38,9 @@ with open(outname,'w') as out:
 								pos=int(pos)
 								out.write("%s,%s," %(isolate_id,motif))
 			    					if end >= pos and start <= pos: #check to see if position hits gene
-									print "in gene"
 									out.write("%s," "1," %(pos)) #Write 1 if it does
 									if "gene" in feature.qualifiers:
                                     						g=feature.qualifiers["gene"][0]
-										print g
 										out.write("%s" %(g))
 										out.write("\n")
 									else:
