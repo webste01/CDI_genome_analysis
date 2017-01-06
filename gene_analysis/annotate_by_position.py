@@ -20,11 +20,13 @@ with open(cim_file, 'r+') as cim:
 				d[(isolate_id,motif)].append(pos)
 cim.close()
 
+print len(d)
 
 #funtion will write to a file: contig ID, position, motif, in_gene(0/1), gene name (if hits gene, else 0), uniprotID(if hits gene, else 0)
 print "Genbank Directory:" + gbk_dir
 with open(outname,'w') as out:
 	for item in d:
+		print item
 		for fname in os.listdir(gbk_dir):    # change directory as needed
 			isolate_id = item[0] 
 			motif = item[1] 
