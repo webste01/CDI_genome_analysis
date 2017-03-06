@@ -18,7 +18,7 @@ with open(out,'w') as out_file:
         		for feature in rec.features:
 	   			start=feature.location.nofuzzy_start
             			end=feature.location.nofuzzy_end
-				if end < coor2+5000 and start > coor1-5000:
+				if end < coor2+100 and start > coor1-100:
 					out_file.write("%s,%s," %(start,end))
 					if "gene" in feature.qualifiers:
 						out_file.write("%s," %(feature.qualifiers["gene"]))
