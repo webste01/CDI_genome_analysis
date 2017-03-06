@@ -13,7 +13,6 @@ print coor2
 with open(out,'w') as out_file:
 	for rec in SeqIO.parse(gb_file, "genbank"):
 		print gb_file
-		print rec
     		if rec.features:
         		for feature in rec.features:
 	   			start=feature.location.nofuzzy_start
@@ -21,14 +20,17 @@ with open(out,'w') as out_file:
 				if end < coor2+100 and start > coor1-100:
 					out_file.write("%s,%s," %(start,end))
 					if "gene" in feature.qualifiers:
+						print feature.qualifiers["gene"]
 						out_file.write("%s," %(feature.qualifiers["gene"]))
 					else:
 						out_file.write(",")
 					if "product" in feature.qualifiers:
+						print feature.qualifiers["product"]
 						out_file.write("%s," %(feature.qualifiers["product"]))
 					else:
                                                 out_file.write(",")
 					if "translation" in feature.qualifiers:
+						print feature.qualifiers["translation"]
 						out_file.write("%s," %(feature.qualifiers["translation"]))
 					else:
                                                 out_file.write(",")
