@@ -23,6 +23,7 @@ with open(out,'w') as out_file:
 						print feature.qualifiers["gene"]
 						out_file.write("%s," %(feature.qualifiers["gene"]))
 					else:
+						print feature.qualifiers["locus_tag"]
 						out_file.write(",")
 					if "product" in feature.qualifiers:
 						print feature.qualifiers["product"]
