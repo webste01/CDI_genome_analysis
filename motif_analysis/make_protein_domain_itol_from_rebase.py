@@ -62,10 +62,13 @@ with open("motif_matrix.csv",'w') as f:
 
 with open("motif_for_itol.txt",'w') as mf:
 	motif_list = list(df.columns.values)
-	mlist = ",".join(motif_list)
-	x = len(mlist)
-	color_string = str(['#202020']*x)
-	mf.write("DATASET_EXTERNALSHAPE" + "\n" + "SEPARATOR COMMA" + "\n" + "DATASET_LABEL,Motifs" + "\n" + "COLOR" + color_string+"\n" + "COLOR,#ff0000" + "\n" + "FIELD_LABELS" + mlist + "\n" + "LEGEND_LABELS" + mlist + "\n" + "MARGIN,20" "\n" + "SHAPE_TYPE,2" + "\n" + "DATA" + "\n")
+	str_list = filter(None,motif_list)
+	x=0
+	for item in str_list:
+		x=x+1	
+	mlist = ",".join(str_list)
+	color_string = str('#202020,'*x)
+	mf.write("DATASET_EXTERNALSHAPE" + "\n" + "SEPARATOR COMMA" + "\n" + "DATASET_LABEL,Motifs" + "\n" + "FIELD_COLORS," + color_string+"\n" + "COLOR,#ff0000" + "\n" + "FIELD_LABELS," + mlist + "\n" + "LEGEND_LABELS," + mlist + "\n" + "MARGIN,20" "\n" + "SHAPE_TYPE,2" + "\n" + "DATA" + "\n")
 	df.to_csv(mf,float_format='%.0f',header=False)
 
 
