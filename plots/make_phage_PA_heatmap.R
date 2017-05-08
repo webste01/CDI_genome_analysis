@@ -31,6 +31,8 @@ new[]<-lapply(new, function(x) pt1$V4[match(x, pt1$V1)])
 nonNA <- which(!is.na(new), TRUE)
 
 #Create shell matrix where the rows and columns have the bacterial species
+color2bact<-matrix(0,nrow=nrow(nonNA),ncol=2)
+
 dat<-pr_formatted
 for (i in 1:nrow(nonNA)){
 	row_val=nonNA[i,1]
@@ -39,8 +41,15 @@ for (i in 1:nrow(nonNA)){
 	group<-rownames(sub)
 	bact_species<-new[row_val,col_val]
 	dat[row.names(dat)==group,col_val]<-as.factor(bact_species)
+	color2bact[i,1]<-as.character(bact_species)
+	color2bact[i,2]<-as.factor(bact_species)
 	
 }
+
+#Write out a table of bacteria to color mapping
+map<-data.frame(unique(color2bact))
+colnames(map)<-c("Bacterial_species","color")
+write.table(map,"color2bacteria.txt",quote=F,row.names=F)
 
 #Convert to matrix
 dat<-as.matrix(dat)
@@ -52,6 +61,14 @@ hm<-heatmap.2(mat),main = "Difference in gene presence", density.info="none", tr
 dat_ordered<-dat[hm$rowInd,hm$colInd]
 n=length(unique(c(dat_ordered)))
 colors = structure(circlize::rand_color(n-2))
+pdf("phage_colored_heatmap.pdf",height=10,width=10)
 aheatmap(dat_ordered, Rowv = NA, Colv = seq(ncol(dat_ordered),1),col=c("white","cornflowerblue",colors), legend=T)
+dev.off()
+
+#Write out mapping of bacteria species to color
+
+
+
+
 
 
