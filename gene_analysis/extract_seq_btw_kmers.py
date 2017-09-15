@@ -1,5 +1,6 @@
 import os
 import sys
+import csv
 from Bio import SeqIO
 from Bio.Seq import Seq
 #Script to get 200bp flanking region of each tandem repeat, and step through each repeat for the closest kmer
@@ -16,6 +17,9 @@ print in_trf
 in_jf          = 'high_freq_kmers.txt'
 flanking_bp    = int(200)
 
+isolate = str(in_fa).split('/')[1].split('.')[0]
+
+out_name = str(isolate) + ".csv"
 
 
 full_fasta_seq = SeqIO.parse(open(in_fa),'fasta')
@@ -26,7 +30,6 @@ kmers=[]
 #idictionary of Tuple that is keyed upon [leftmer,rightmer,tandem repeat] with the corresponding isolate name as the value
 d={}
 
-isolate = str(in_fa).split('/')[1].split('.')[0]
 
 with open(in_jf) as jellyfish:
 	for l in jellyfish:
@@ -52,17 +55,23 @@ def get_flanking(start_coord,end_coord,flanking_bp):
 
 def find_kmer_in_seq(repeat,upstream_flank_seq,downstream_flank_seq,isolate):
 #'''given a sequence (reference) and the kmers from the list of all high frequency kmers, find if the sequence contains the kmer and get the coordinates of the kmer within that sequence'''
+	upmer_dist={}
+	downmer_dist={}
 	for mer in kmers:
-		rc = Seq(str(mer))
-		rc_mer = rc.reverse_complement()
-		leftmer  = downstream_flank.find(str(rc_mer))
-                rightmer = upstream_flank.find(mer)
-		if (leftmer>0) and (rightmer>0):
-			d[mer,mer,repeat]=isolate
-		elif (leftmer>0) and (rightmer<0):
-			d[mer,rightmer,repeat]=isolate
-		elif (leftmer<0) and (rightmer>0):
-			d[leftmer,mer,repeat]=isolate
+		upmer_start  = upstream_flank.find(mer)
+		upmer = upmer_start + len(mer)
+		if upmer>0:
+			upmer_dist[mer]=upmer
+                downmer = downstream_flank.find(mer)
+		if downmer>0:
+			downmer_dist[mer]=downmer
+	if upmer_dist:
+	        closest_upmer   = max(upmer_dist, key=upmer_dist.get)
+	if downmer_dist:
+		closest_downmer = max(downmer_dist, key=downmer_dist.get)
+       	if 'closest_upmer' in locals():
+		if  'closest_downmer' in locals():
+			d[closest_upmer,closest_downmer,repeat]=isolate
 	return
 
 
@@ -79,5 +88,21 @@ with open(in_trf,'r') as trf:
                 	upstream_flank   = flanks[1]
                 	find_kmer_in_seq(repeat,upstream_flank,downstream_flank,isolate)
         t=d.items()
-        print t
+
+
+
+with open(out_name, 'w') as a_file:
+    for result in t:
+	utr = str(result[0][0])
+	dtr = str(result[0][1])
+	kmer = result[0][2]
+	iso = result[1]
+        final = ','.join([utr,dtr,kmer,iso])
+        a_file.write(final + '\n')
+
+
+
+
+
+
 
