@@ -7,14 +7,7 @@ from Bio.Seq import Seq
 #Script to get 200bp flanking region of each tandem repeat, and step through each repeat for the closest kmer
 #Also extract the sequence between the kmers (to later be compared for similarity) 
 in_fa          = sys.argv[1]
-print in_fa
 in_trf         = sys.argv[2]
-print in_trf
-#in_jf          = sys.argv[3]
-#flanking_bp    = sys.argv[4]
-
-#in_fa          = 'trf_output/u00006crpx_c_025511.fa'
-#in_trf         = 'trf_output/u00006crpx_c_025511_out'
 in_jf          = 'high_freq_kmers.txt'
 flanking_bp    = int(200)
 
@@ -47,15 +40,21 @@ def get_seq_btw_2coords(start_coord,end_coord):
 
 def get_seq_btw_2kmers(K1,K2):
 #'''Given a fasta sequence and two kmers, returns the full insertion sequence between the end of K1 and the start of K2'''
-	k1 = K1.lower()
+	full_fasta_seq = SeqIO.parse(open(in_fa),'fasta')
+	k1=K1.lower()
 	k2=K2.lower()
 	for fasta in full_fasta_seq:
 		fa_string = str(fasta.seq)
 		start = fa_string.find(k1)
 		end = fa_string.find(k2)
 		end_coord = end + len(k2)
-		subset_fa =fa_string[int(start):int(end_coord)]
-		return(subset_fa)
+		length = end_coord - start
+		print str(length)
+		if length < 2000:
+			subset_fa =fa_string[int(start):int(end_coord)]
+		else:
+			subset_fa = "too long"
+	return subset_fa, length
 
 def get_flanking(start_coord,end_coord,flanking_bp):
 #'''Given the start and end coordinates of region, find the flanking region with length  X base pairs upstream and downstream'''
@@ -75,17 +74,11 @@ def find_kmer_in_seq(repeat,upstream_flank_seq,downstream_flank_seq,isolate):
 		if downstream_flank_seq.find(kmer) > 0:
 			downstream_kmers[kmer]=downstream_flank_seq.find(kmer)
 	if bool(upstream_kmers):
-		print "upstream_kmers:"
-        	print upstream_kmers
 		max_upmer = max(upstream_kmers.iteritems(), key=operator.itemgetter(1))[0]
-		print "max_upmer:" + str(max_upmer)
 	else:
 		max_upmer = "0"
 	if bool(downstream_kmers):
-		print "downstream_kmers:"
-		print downstream_kmers
 		min_downmer = min(downstream_kmers.iteritems(), key=operator.itemgetter(1))[0]
-		print "min downer:" + str(min_downmer)
 	else: min_downmer = "0"
 	if max_upmer!="0" and min_downmer!="0":
 		d[max_upmer,min_downmer,repeat]=isolate
@@ -111,10 +104,11 @@ with open(out_name, 'w') as a_file:
     for result in t:
 	utr = str(result[0][0]) #Kmer closest upstream to TR
 	dtr = str(result[0][1]) #Kmer closest downstream to TR
-	ins_seq = str(get_seq_btw_2kmers(utr,dtr))
+	ins_seq = str(get_seq_btw_2kmers(utr,dtr)[0])
+	length = str(get_seq_btw_2kmers(utr,dtr)[1])
 	repeat = result[0][2] #TR
 	iso = result[1] #Isolate
-        final = ','.join([utr,dtr,ins_seq,repeat,iso])
+        final = ','.join([utr,dtr,ins_seq,length,repeat,iso])
         a_file.write(final + '\n')
 
 
