@@ -9,7 +9,7 @@ from Bio.Seq import Seq
 in_fa          = sys.argv[1]
 in_trf         = sys.argv[2]
 in_jf          = 'high_freq_kmers.txt'
-flanking_bp    = int(200)
+flanking_bp    = int(20000)
 
 isolate = str(in_fa).split('/')[1].split('.')[0]
 
@@ -49,8 +49,7 @@ def get_seq_btw_2kmers(K1,K2):
 		end = fa_string.find(k2)
 		end_coord = end + len(k2)
 		length = end_coord - start
-		print str(length)
-		if length < 2000:
+		if length < flanking_bp:
 			subset_fa =fa_string[int(start):int(end_coord)]
 		else:
 			subset_fa = "too long"
@@ -71,7 +70,11 @@ def find_kmer_in_seq(repeat,upstream_flank_seq,downstream_flank_seq,isolate):
 	for kmer in kmers:
 		if upstream_flank_seq.find(kmer) > 0:
 			upstream_kmers[kmer]=upstream_flank_seq.find(kmer)
+			print "kmer(below) is in upstream flank"
+			print kmer
 		if downstream_flank_seq.find(kmer) > 0:
+			print "kmer (below)  is in downstream flank"
+			print kmer
 			downstream_kmers[kmer]=downstream_flank_seq.find(kmer)
 	if bool(upstream_kmers):
 		max_upmer = max(upstream_kmers.iteritems(), key=operator.itemgetter(1))[0]
@@ -80,8 +83,12 @@ def find_kmer_in_seq(repeat,upstream_flank_seq,downstream_flank_seq,isolate):
 	if bool(downstream_kmers):
 		min_downmer = min(downstream_kmers.iteritems(), key=operator.itemgetter(1))[0]
 	else: min_downmer = "0"
-	if max_upmer!="0" and min_downmer!="0":
-		d[max_upmer,min_downmer,repeat]=isolate
+	#if max_upmer!="0" and min_downmer!="0":
+	print "maximum position of upstream kmer:"
+	print max_upmer
+	print "minimum position of downstream kmer:"
+	print min_downmer
+	d[max_upmer,min_downmer,repeat]=isolate
 
 
 with open(in_trf,'r') as trf:
@@ -92,23 +99,45 @@ with open(in_trf,'r') as trf:
                 	start = int(l[0])
                 	end = int(l[1])
                 	repeat = str(l[13])
+			print "repeat"
+			print repeat
                 	flanks = get_flanking(start,end,flanking_bp)
                 	downstream_flank = flanks[0]
+			print "downstream flankig region"
+			print downstream_flank
+			print "upstream flanking region"
                 	upstream_flank   = flanks[1]
+			print upstream_flank
                 	find_kmer_in_seq(repeat,upstream_flank,downstream_flank,isolate)
-        t=d.items()
-
+			my_seq = Seq(repeat)
+			#print "reverse complement repeat"
+			#revcomp = str(my_seq.reverse_complement())
+			#print revcomp
+			#find_kmer_in_seq(revcomp,upstream_flank,downstream_flank,isolate)
+trf.close()
+t=d.items()
 
 
 with open(out_name, 'w') as a_file:
     for result in t:
 	utr = str(result[0][0]) #Kmer closest upstream to TR
 	dtr = str(result[0][1]) #Kmer closest downstream to TR
-	ins_seq = str(get_seq_btw_2kmers(utr,dtr)[0])
-	length = str(get_seq_btw_2kmers(utr,dtr)[1])
-	repeat = result[0][2] #TR
+	if utr!="0" and dtr!="0":
+		between_2_kmers = get_seq_btw_2kmers(utr,dtr)
+		print "between_2_kmers"
+		print between_2_kmers
+		ins_seq = between_2_kmers[0]
+		length  = str(between_2_kmers[1])
+		print "insertion seq:"
+		print ins_seq
+		print "length of insertion seq"
+		print length
+	else:
+		ins_seq = "none"
+		length = "0"
+	repeat = str(result[0][2]) #TR
 	iso = result[1] #Isolate
         final = ','.join([utr,dtr,ins_seq,length,repeat,iso])
         a_file.write(final + '\n')
 
-
+a_file.close()
