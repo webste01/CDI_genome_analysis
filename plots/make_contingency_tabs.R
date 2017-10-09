@@ -71,4 +71,8 @@ theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.g
 geom_vline(xintercept = xint) +
 labs(y="Allele",x="MLST")
 
-ggsave(filename=paste(name,"_cont_tab.pdf",sep=""), width = 15, height = 8, plot=p) 
+ggsave(filename=paste(name,"_cont_tab.pdf",sep=""), width = 24, height = 20, plot=p) 
+
+
+
+
