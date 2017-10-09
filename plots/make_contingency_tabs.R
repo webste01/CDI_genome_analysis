@@ -62,7 +62,7 @@ geom_tile(aes(fill=value))+
 scale_fill_gradient(low = "white",high = "steelblue",name="Isolate Count") +  
 geom_text(aes(label=value), data=cbind(aggregate(value~X1, CT.m, sum), X2="total")) + 
 scale_x_discrete(position = "top") +
-scale_y_discrete(breaks=c(1,2,3,4,5,6,7,8,9,10),limits=c(CT.m$X1),expand = c(0,0)) +
+scale_y_discrete(breaks=c(seq(1:nrow(CT.m))),limits=c(CT.m$X1),expand = c(0,0)) +
 geom_text(aes(X2, label= value)) +
 ggtitle("MLST counts per allele") +
 theme_bw()  +
