@@ -5,6 +5,7 @@ import sys
 gb_file = sys.argv[1]
 coor1=int(sys.argv[2])
 coor2=int(sys.argv[3])
+window = int(sys.argv[4])
 out=sys.argv[4]
 
 print coor1
@@ -17,7 +18,7 @@ with open(out,'w') as out_file:
         		for feature in rec.features:
 	   			start=feature.location.nofuzzy_start
             			end=feature.location.nofuzzy_end
-				if end < coor2+100 and start > coor1-100:
+				if end < coor2+window and start > coor1-window:
 					out_file.write("%s,%s," %(start,end))
 					if "gene" in feature.qualifiers:
 						print feature.qualifiers["gene"]
