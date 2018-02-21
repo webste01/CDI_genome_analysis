@@ -6,7 +6,7 @@ gb_file = sys.argv[1]
 coor1=int(sys.argv[2])
 coor2=int(sys.argv[3])
 window = int(sys.argv[4])
-out=sys.argv[4]
+out=sys.argv[5]
 
 print coor1
 print coor2
