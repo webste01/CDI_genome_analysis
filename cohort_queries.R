@@ -112,10 +112,13 @@ before_after_counts<-data.frame(matrix(, nrow=1, ncol=0))
 namevector2<-c("eRAP_ID","before_primary_count","after_primary_count","same_day_primary_count")
 before_after_counts[,namevector2] <- NA
 
+#Remove CDI negative from dat
+dat3<-dat[dat$specimen_type!="CDI negative",]
+
 rm(tmp)
 for (i in 1:nrow(prim3)){
 	tmp_prim3<-prim3[i,]
-        tmp_dat<-dat[dat$eRAP_ID==tmp_prim3$eRAP_ID,]
+        tmp_dat<-dat3[dat3$eRAP_ID==tmp_prim3$eRAP_ID,]
 	tmp_prim3$specimen_sampling_date<-as.Date(tmp_prim3$specimen_sampling_date,format="%Y-%m-%d")
 	tmp_dat$specimen_sampling_date<-as.Date(tmp_dat$specimen_sampling_date,format="%Y-%m-%d")
 	#Remove overlap
@@ -152,8 +155,10 @@ colnames(n_ICUs_visited)<-c("eRAP_ID","N_depts_visited")
 
 final4<-merge(final3, n_ICUs_visited,by.x="eRAP_ID",by.y="eRAP_ID",all.x=TRUE,all.y=TRUE)
 final5<-merge(final4, before_after_counts, by.x="eRAP_ID",by.y="eRAP_ID",all.x=TRUE,all.y=TRUE)
-	
-write.table(final5,"cohort_agg_data.csv",quote=F,sep=",",row.names=FALSE)
+
+#Remove identical rows
+final6<-final5[!duplicated(final5), ]	
+write.table(final6,"cohort_agg_data.csv",quote=F,sep=",",row.names=FALSE)
 
 
 
